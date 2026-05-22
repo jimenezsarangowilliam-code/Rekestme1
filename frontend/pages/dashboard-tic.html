@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="/rekestme/frontend/pages/">
+  <title>Panel TIC — ReKestMe</title>
+  <link rel="icon" type="image/svg+xml" href="../img/logo.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<style>
+/* Notification bell */
+.btn-notif {
+  position: relative;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  border-radius: 8px;
+  padding: .3rem .55rem;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-notif:hover { background: rgba(255,255,255,.22); }
+.badge-notif {
+  position: absolute;
+  top: -5px; right: -5px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 999px;
+  font-size: .65rem;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--navy);
+}
+/* Chart containers */
+.chart-box { position:relative; height:260px; }
+
+/* ===== KANBAN ===== */
+.kanban-board {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  overflow-x: auto;
+}
+.kanban-col {
+  flex: 1 1 0;
+  min-width: 200px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+}
+.kanban-col-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .65rem 1rem;
+  border-radius: 12px 12px 0 0;
+  border-top: 3px solid var(--col-color, #94a3b8);
+  background: #fff;
+  font-weight: 700;
+  font-size: .8rem;
+  color: var(--navy);
+}
+.kanban-col-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.kanban-col-title { font-size: .82rem; font-weight: 600; }
+.kanban-col-count {
+  background: #e2e8f0;
+  color: var(--gray-500);
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  min-width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+.kanban-col-body {
+  padding: .5rem;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  min-height: 120px;
+}
+.kanban-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 0;
+  color: var(--gray-400);
+}
+.kanban-empty {
+  text-align: center;
+  color: var(--gray-300);
+  font-size: .8rem;
+  padding: 1.5rem .5rem;
+}
+.kanban-card {
+  background: #fff;
+  border-radius: 9px;
+  padding: .75rem .85rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.07);
+  cursor: pointer;
+  transition: box-shadow .18s, transform .15s;
+  border-left: 3px solid transparent;
+  position: relative;
+}
+.kanban-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,.11); transform: translateY(-2px); }
+.kanban-card-title {
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.3;
+  flex: 1;
+}
+.kanban-card-meta {
+  font-size: .76rem;
+  color: var(--gray-500);
+  margin: .4rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: .1rem;
+}
+.kanban-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: .5rem;
+}
+.kanban-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-size: .68rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.kanban-del-btn {
+  background: none;
+  border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+  font-size: .8rem;
+  padding: .1rem .2rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+  transition: color .15s;
+}
+.kanban-del-btn:hover { color: #ef4444; }
+.kanban-ghost { opacity: .4; background: var(--blue-light); border: 2px dashed var(--blue); }
+.kanban-drag  { opacity: .9; transform: rotate(1.5deg); box-shadow: 0 8px 24px rgba(0,0,0,.18); cursor: grabbing; }
+/* Stat kpi mini */
+.kpi-row { display:flex; gap:.75rem; flex-wrap:wrap; margin-bottom:1.25rem; }
+.kpi-mini { flex:1; min-width:130px; background:var(--blue-pale); border-radius:10px; padding:.75rem 1rem; }
+.kpi-mini .kpi-val { font-size:1.6rem; font-weight:800; color:var(--navy); line-height:1; }
+.kpi-mini .kpi-lbl { font-size:.75rem; color:var(--gray-500); margin-top:.2rem; }
+/* ===== INVENTARIO ===== */
+.inv-cat-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 10px;
+  padding: .75rem 1rem;
+  margin-bottom: .5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.07);
+}
+.inv-cat-card.active { border-left: 4px solid #6366f1; background: #f0f4ff; }
+.inv-cat-card { cursor: pointer; }
+.inv-cat-nombre { font-weight: 700; color: var(--navy); font-size: .9rem; }
+.inv-cat-stock  { display: flex; gap: .4rem; margin-top: .4rem; flex-wrap: wrap; }
+.inv-cat-creador { font-size: .72rem; color: var(--gray-500); margin-top: .35rem; }
+.inv-cat-actions { display: flex; gap: .3rem; flex-shrink: 0; }
+.inv-panel-items {
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+}
+</style>
+<body class="dashboard-wrapper">
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-rekestme">
+  <div class="container-fluid px-3">
+    <span style="display:flex;align-items:center;gap:.75rem;">
+      <img src="../img/logo-navbar.svg" alt="ReKestMe" style="height:30px;width:auto;flex-shrink:0;">
+      <span style="color:rgba(255,255,255,.55);font-size:.8rem;font-weight:400;">/ Panel TIC</span>
+    </span>
+
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <button id="btnNotificaciones" class="btn-notif" title="Notificaciones">
+        <i class="bi bi-bell"></i>
+        <span id="badgeNotif" class="badge-notif" style="display:none;"></span>
+      </button>
+      <button id="btnVerPerfil" class="nav-user-btn">
+        <i class="bi bi-person-circle"></i>
+        <span id="nombreUsuario">Cargando...</span>
+      </button>
+      <button id="btnLogout" class="btn-logout btn btn-sm">
+        <i class="bi bi-box-arrow-right me-1"></i>Salir
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== TABS NAV ===== -->
+<div class="tab-nav-wrapper">
+  <ul class="nav nav-tabs" id="tabsPanel">
+    <li class="nav-item">
+      <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabSolicitudes">
+        <i class="bi bi-list-check"></i>Solicitudes
+        <span id="badgePendientes" class="badge badge-urgente ms-1" style="display:none;font-size:.65rem;"></span>
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabAulas">
+        <i class="bi bi-building"></i>Aulas
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabSoftware">
+        <i class="bi bi-floppy"></i>Software
+      </button>
+    </li>
+    <li class="nav-item solo-admin d-none">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabUsuarios">
+        <i class="bi bi-people"></i>Usuarios
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabEstadisticas">
+        <i class="bi bi-bar-chart-line"></i>Estadísticas
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabInventario" id="inventario-tab">
+        <i class="bi bi-box-seam"></i>Inventario
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" id="chat-tab" data-bs-toggle="tab" data-bs-target="#tabChat">
+        <i class="bi bi-chat-dots"></i>Chat TIC
+        <span class="badge bg-danger ms-1 d-none" id="chat-badge">0</span>
+      </button>
+    </li>
+  </ul>
+</div>
+
+<div class="dashboard-content">
+
+  <!-- Cabecera -->
+  <div class="page-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div>
+      <h1 class="page-title mb-0">Centro de control TIC</h1>
+      <p class="page-subtitle mb-0">Gestión completa de solicitudes, aulas y software del centro</p>
+    </div>
+    <button id="btnHistorial" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1"
+            title="Ver historial de solicitudes">
+      <i class="bi bi-gear"></i>
+      <span>Historial</span>
+    </button>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+      <div class="card stat-card stat-navy p-3">
+        <div class="stat-label">Total solicitudes</div>
+        <div class="stat-numero" id="statTotal">—</div>
+        <i class="bi bi-collection stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card stat-card stat-slate p-3">
+        <div class="stat-label">Pendientes</div>
+        <div class="stat-numero" id="statPendientes">—</div>
+        <i class="bi bi-hourglass-split stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card stat-card stat-danger p-3">
+        <div class="stat-label">En instalación</div>
+        <div class="stat-numero" id="statUrgentes">—</div>
+        <i class="bi bi-tools stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="card stat-card stat-success p-3">
+        <div class="stat-label">Completadas</div>
+        <div class="stat-numero" id="statCompletadas">—</div>
+        <i class="bi bi-check2-circle stat-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB CONTENT -->
+  <div class="tab-content">
+
+    <!-- ---- TAB: SOLICITUDES ---- -->
+    <div class="tab-pane fade show active" id="tabSolicitudes">
+
+      <!-- Buscador -->
+      <div class="d-flex align-items-center gap-2 mb-3" style="animation: fadeInUp .3s ease both;">
+        <div class="input-group input-group-sm" style="max-width:320px;">
+          <span class="input-group-text"><i class="bi bi-search"></i></span>
+          <input type="text" id="buscadorSolicitudes" class="form-control"
+                 placeholder="Buscar profesor, software, aula..." style="font-size:.85rem;" />
+        </div>
+        <button id="btnMisSolicitudes" class="btn btn-outline-primary btn-sm" style="font-size:.82rem;white-space:nowrap;">
+          <i class="bi bi-person-check"></i> Mis solicitudes
+        </button>
+        <span id="kanbanTotalActivas" class="text-muted" style="font-size:.8rem;white-space:nowrap;"></span>
+      </div>
+
+      <!-- Kanban board -->
+      <div class="kanban-board" id="kanbanBoard" style="animation: fadeInUp .4s ease .1s both;">
+
+        <!-- Columna: Pendiente -->
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="--col-color:#f59e0b;">
+            <div class="d-flex align-items-center gap-2">
+              <span class="kanban-col-dot" style="background:#f59e0b;"></span>
+              <span class="kanban-col-title">Pendiente</span>
+            </div>
+            <span class="kanban-col-count" id="count-pendiente">0</span>
+          </div>
+          <div class="kanban-col-body" id="col-pendiente">
+            <div class="kanban-loading"><div class="spinner-border spinner-border-sm"></div></div>
+          </div>
+        </div>
+
+        <!-- Columna: En revisión -->
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="--col-color:#6366f1;">
+            <div class="d-flex align-items-center gap-2">
+              <span class="kanban-col-dot" style="background:#6366f1;"></span>
+              <span class="kanban-col-title">En revisión</span>
+            </div>
+            <span class="kanban-col-count" id="count-revision">0</span>
+          </div>
+          <div class="kanban-col-body" id="col-revision">
+            <div class="kanban-loading"><div class="spinner-border spinner-border-sm"></div></div>
+          </div>
+        </div>
+
+        <!-- Columna: Aprobada -->
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="--col-color:#10b981;">
+            <div class="d-flex align-items-center gap-2">
+              <span class="kanban-col-dot" style="background:#10b981;"></span>
+              <span class="kanban-col-title">Aprobada</span>
+            </div>
+            <span class="kanban-col-count" id="count-aprobada">0</span>
+          </div>
+          <div class="kanban-col-body" id="col-aprobada">
+            <div class="kanban-loading"><div class="spinner-border spinner-border-sm"></div></div>
+          </div>
+        </div>
+
+        <!-- Columna: En instalación -->
+        <div class="kanban-col">
+          <div class="kanban-col-header" style="--col-color:#3b82f6;">
+            <div class="d-flex align-items-center gap-2">
+              <span class="kanban-col-dot" style="background:#3b82f6;"></span>
+              <span class="kanban-col-title">En instalación</span>
+            </div>
+            <span class="kanban-col-count" id="count-instalacion">0</span>
+          </div>
+          <div class="kanban-col-body" id="col-instalacion">
+            <div class="kanban-loading"><div class="spinner-border spinner-border-sm"></div></div>
+          </div>
+        </div>
+
+      </div><!-- /kanban-board -->
+
+    </div>
+
+    <!-- ---- TAB: AULAS ---- -->
+    <div class="tab-pane fade" id="tabAulas">
+      <div class="row g-4">
+        <div class="col-lg-4" style="animation: fadeInLeft .4s ease both;">
+          <div class="card">
+            <div class="card-header card-header-accent">
+              <span class="section-title mb-0">
+                <i class="bi bi-building-add"></i>Añadir aula
+              </span>
+            </div>
+            <div class="card-body">
+              <form id="formNuevaAula">
+                <div class="mb-2">
+                  <label class="form-label">Nombre</label>
+                  <input type="text" id="aulaNombre" class="form-control" placeholder="Aula 201" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Edificio</label>
+                  <input type="text" id="aulaEdificio" class="form-control" placeholder="Edificio A" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Planta</label>
+                  <select id="aulaPlanta" class="form-select" required>
+                    <option value="" disabled selected>Selecciona planta</option>
+                    <option value="Sótano 2">Sótano 2 (-2)</option>
+                    <option value="Sótano 1">Sótano 1 (-1)</option>
+                    <option value="Baja">Planta Baja (0)</option>
+                    <option value="Primera">Primera (1)</option>
+                    <option value="Segunda">Segunda (2)</option>
+                    <option value="Tercera">Tercera (3)</option>
+                    <option value="Cuarta">Cuarta (4)</option>
+                    <option value="Quinta">Quinta (5)</option>
+                    <option value="Sexta">Sexta (6)</option>
+                    <option value="Séptima">Séptima (7)</option>
+                    <option value="Octava">Octava (8)</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Capacidad</label>
+                  <input type="number" id="aulaCapacidad" class="form-control" value="30" min="1" required />
+                </div>
+                <div class="form-check mb-1">
+                  <input type="checkbox" id="aulaProyector" class="form-check-input" />
+                  <label class="form-check-label" for="aulaProyector">Tiene proyector</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input type="checkbox" id="aulaRed" class="form-check-input" />
+                  <label class="form-check-label" for="aulaRed">Tiene red Ethernet</label>
+                </div>
+                <!-- Ordenadores: campos opcionales para generar el mapa automáticamente -->
+                <hr class="my-2" />
+                <p class="form-text mb-1" style="font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);">
+                  Mapa de PCs (opcional)
+                </p>
+                <div class="mb-3">
+                  <label class="form-label">Nº de PCs</label>
+                  <input type="number" id="aulaNumOrdenadores" class="form-control form-control-sm"
+                         value="0" min="0" max="100" placeholder="0" />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="bi bi-plus-circle me-1"></i>Añadir aula
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8" style="animation: fadeInRight .4s ease both;">
+          <!-- Pills: Gestión / Vista centro -->
+          <ul class="nav nav-pills mb-3" id="pillsVistaAulas" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="pillGestion" type="button"
+                      data-bs-toggle="pill" data-bs-target="#contenedorTablaAulas"
+                      role="tab" aria-selected="true">
+                <i class="bi bi-table me-1"></i>Gestión
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pillVistaCentro" type="button"
+                      data-bs-toggle="pill" data-bs-target="#gridAulasTIC"
+                      role="tab" aria-selected="false">
+                <i class="bi bi-grid me-1"></i>Vista centro
+              </button>
+            </li>
+          </ul>
+
+          <div class="tab-content">
+            <!-- Vista: Gestión (tabla) -->
+            <div id="contenedorTablaAulas" class="tab-pane fade show active" role="tabpanel">
+              <div class="card">
+                <div class="card-header" style="flex-wrap:wrap;gap:.5rem;">
+                  <span class="section-title mb-0"><i class="bi bi-building"></i>Aulas del centro</span>
+                  <div class="input-group input-group-sm ms-auto" style="max-width:220px;">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="buscadorAulas" class="form-control" placeholder="Buscar aula..." style="font-size:.8rem;" />
+                  </div>
+                </div>
+                <div class="table-responsive">
+                  <table class="table mb-0">
+                    <thead>
+                      <tr>
+                        <th>#</th><th>Nombre</th><th>Edificio</th><th>Planta</th>
+                        <th>Cap.</th><th>Proyector</th><th>Red</th><th>PCs</th><th>Acc.</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tablaAulas">
+                      <tr><td colspan="8" class="text-center py-4">
+                        <div class="spinner-border spinner-border-sm"></div>
+                      </td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vista: Vista centro (grid tarjetas) -->
+            <div id="gridAulasTIC" class="tab-pane fade" role="tabpanel">
+              <div id="gridAulasTICInner" class="row g-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: SOFTWARE ---- -->
+    <div class="tab-pane fade" id="tabSoftware">
+      <div class="row g-4">
+        <div class="col-lg-4" style="animation: fadeInLeft .4s ease both;">
+          <div class="card">
+            <div class="card-header card-header-accent">
+              <span class="section-title mb-0">
+                <i class="bi bi-floppy-fill"></i>Añadir software
+              </span>
+            </div>
+            <div class="card-body">
+              <form id="formNuevoSoftware">
+                <div class="mb-2">
+                  <label class="form-label">Nombre</label>
+                  <input type="text" id="swNombre" class="form-control" placeholder="Visual Studio Code" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Versión</label>
+                  <input type="text" id="swVersion" class="form-control" value="1.0" required />
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Tipo</label>
+                  <select id="swTipo" class="form-select">
+                    <option value="gratuito">Gratuito</option>
+                    <option value="open_source">Open Source</option>
+                    <option value="licencia">De licencia</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">URL de descarga <span style="color:var(--text-muted);text-transform:none;font-size:.75rem;">(opcional)</span></label>
+                  <input type="url" id="swUrl" class="form-control" placeholder="https://..." />
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Requisitos <span style="color:var(--text-muted);text-transform:none;font-size:.75rem;">(opcional)</span></label>
+                  <textarea id="swRequisitos" class="form-control" rows="2" placeholder="4 GB RAM, Windows 10+"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">
+                  <i class="bi bi-plus-circle me-1"></i>Añadir software
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8" style="animation: fadeInRight .4s ease both;">
+          <div class="card">
+            <div class="card-header" style="flex-wrap:wrap;gap:.5rem;">
+              <span class="section-title mb-0"><i class="bi bi-grid"></i>Catálogo de software</span>
+              <div class="input-group input-group-sm ms-auto" style="max-width:220px;">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" id="buscadorSoftware" class="form-control" placeholder="Buscar software..." style="font-size:.8rem;" />
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th><th>Nombre</th><th>Versión</th><th>Tipo</th><th>Enlace</th><th>Acc.</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaSoftware">
+                  <tr><td colspan="6" class="text-center py-4">
+                    <div class="spinner-border spinner-border-sm"></div>
+                  </td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: CHAT TIC ---- -->
+    <div class="tab-pane fade" id="tabChat">
+      <div class="card" style="animation: fadeInUp .4s ease both;">
+        <div class="card-body p-0">
+          <div class="d-flex" style="height:560px;">
+
+            <!-- Sidebar: lista de contactos -->
+            <div id="chat-sidebar" class="chat-sidebar">
+              <div class="chat-sidebar-header">
+                <i class="bi bi-chat-dots-fill me-2" style="color:var(--blue);"></i>Mensajes
+              </div>
+              <div class="chat-cargando">
+                <div class="spinner-border spinner-border-sm"></div>
+              </div>
+            </div>
+
+            <!-- Panel de conversación -->
+            <div class="d-flex flex-column flex-grow-1 overflow-hidden">
+
+              <!-- Cabecera del chat activo -->
+              <div id="chat-conv-header" class="chat-conv-header">
+                <span style="color:var(--gray-400);font-size:.875rem;">
+                  Selecciona un contacto para chatear
+                </span>
+              </div>
+
+              <!-- Mensajes -->
+              <div id="chat-mensajes" class="chat-mensajes">
+                <div class="chat-placeholder">
+                  <i class="bi bi-chat-square-dots"></i>
+                  <span>Selecciona un contacto<br>para ver la conversación</span>
+                </div>
+              </div>
+
+              <!-- Formulario -->
+              <div class="chat-input-area">
+                <form id="chat-form" class="d-flex gap-2">
+                  <input type="text" id="chat-input" class="form-control"
+                         placeholder="Escribe un mensaje..." maxlength="1000"
+                         autocomplete="off" disabled />
+                  <button type="submit" class="btn btn-primary px-3" disabled>
+                    <i class="bi bi-send"></i>
+                  </button>
+                </form>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ---- TAB: ESTADÍSTICAS ---- -->
+    <div class="tab-pane fade" id="tabEstadisticas">
+      <div id="statsLoader" class="text-center py-5" style="color:var(--gray-400);">
+        <div class="spinner-border mb-2" role="status"></div>
+        <div style="font-size:.875rem;">Cargando estadísticas...</div>
+      </div>
+      <div id="statsContenido" style="display:none;">
+
+        <!-- KPIs resumen + botones exportar -->
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+          <span class="section-title mb-0"><i class="bi bi-bar-chart-line me-1"></i>Resumen</span>
+          <div class="d-flex gap-2">
+            <button id="btnExportarPDF" class="btn btn-sm btn-outline-danger">
+              <i class="bi bi-file-earmark-pdf me-1"></i>Exportar PDF
+            </button>
+            <button id="btnExportarExcel" class="btn btn-sm btn-outline-success">
+              <i class="bi bi-file-earmark-excel me-1"></i>Exportar Excel
+            </button>
+          </div>
+        </div>
+        <div class="kpi-row" id="kpiRow"></div>
+
+        <!-- Fila 1: Donut estados + Bar software -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-5" style="animation: fadeInLeft .4s ease both;">
+            <div class="card">
+              <div class="card-header">
+                <span class="section-title mb-0"><i class="bi bi-pie-chart"></i>Solicitudes por estado</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-box"><canvas id="chartEstados"></canvas></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7" style="animation: fadeInRight .4s ease both;">
+            <div class="card">
+              <div class="card-header">
+                <span class="section-title mb-0"><i class="bi bi-bar-chart"></i>Top 5 software más solicitado</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-box"><canvas id="chartSoftware"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fila 2: Line meses + Bar aulas -->
+        <div class="row g-4">
+          <div class="col-lg-7" style="animation: fadeInLeft .4s ease .1s both;">
+            <div class="card">
+              <div class="card-header">
+                <span class="section-title mb-0"><i class="bi bi-graph-up"></i>Evolución mensual (últimos 6 meses)</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-box"><canvas id="chartMeses"></canvas></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5" style="animation: fadeInRight .4s ease .1s both;">
+            <div class="card">
+              <div class="card-header">
+                <span class="section-title mb-0"><i class="bi bi-building"></i>Aulas con más solicitudes</span>
+              </div>
+              <div class="card-body">
+                <div class="chart-box"><canvas id="chartAulas"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /statsContenido -->
+    </div>
+
+    <!-- ---- TAB: USUARIOS (solo admin) ---- -->
+    <div class="tab-pane fade solo-admin d-none" id="tabUsuarios">
+      <div class="card" style="animation: fadeInUp .4s ease both;">
+        <div class="card-header" style="flex-wrap:wrap;gap:.5rem;">
+          <span class="section-title mb-0"><i class="bi bi-people"></i>Gestión de usuarios</span>
+          <button class="btn btn-primary btn-sm ms-2" id="btnCrearUsuario" style="font-size:.8rem;">
+            <i class="bi bi-person-plus"></i> Crear usuario
+          </button>
+          <div class="input-group input-group-sm ms-auto" style="max-width:220px;">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="buscadorUsuarios" class="form-control" placeholder="Buscar usuario..." style="font-size:.8rem;" />
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table mb-0" style="border-collapse:separate;border-spacing:0;">
+            <thead>
+              <tr style="background:#f8faff;">
+                <th style="width:52px;padding:12px 16px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0;"></th>
+                <th style="padding:12px 8px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0;">Usuario</th>
+                <th style="padding:12px 8px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0;">Rol</th>
+                <th style="padding:12px 8px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0;">Departamento</th>
+                <th style="padding:12px 8px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0;">Miembro desde</th>
+                <th style="padding:12px 8px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#94a3b8;border-bottom:2px solid #e2e8f0;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaUsuarios">
+              <tr><td colspan="6" class="text-center py-4">
+                <div class="spinner-border spinner-border-sm"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+<!-- ---- MODAL: CREAR USUARIO ---- -->
+<div class="modal fade" id="modalCrearUsuario" tabindex="-1" aria-labelledby="modalCrearUsuarioLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCrearUsuarioLabel"><i class="bi bi-person-plus me-2"></i>Crear nuevo usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="errorCrearUsuario" class="mb-3"></div>
+        <div class="alert alert-info py-2 mb-3" style="font-size:.82rem;">
+          <i class="bi bi-info-circle me-1"></i>
+          Se generará una contraseña aleatoria y se enviará al correo indicado.
+          El usuario también podrá iniciar sesión con Google usando ese mismo correo.
+        </div>
+        <form id="formCrearUsuario" novalidate>
+          <div class="row g-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold" style="font-size:.82rem;">Nombre <span class="text-danger">*</span></label>
+              <input type="text" id="cuNombre" class="form-control form-control-sm" placeholder="Ana" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold" style="font-size:.82rem;">Apellidos <span class="text-danger">*</span></label>
+              <input type="text" id="cuApellidos" class="form-control form-control-sm" placeholder="García López" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold" style="font-size:.82rem;">Email institucional <span class="text-danger">*</span></label>
+              <input type="email" id="cuEmail" class="form-control form-control-sm" placeholder="ana.garcia@instituto.es" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold" style="font-size:.82rem;">Rol <span class="text-danger">*</span></label>
+              <select id="cuRol" class="form-select form-select-sm">
+                <option value="profesor">Profesor/a</option>
+                <option value="tic">Personal TIC</option>
+                <option value="admin">Administrador</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold" style="font-size:.82rem;">Departamento <span class="text-muted">(opcional)</span></label>
+              <input type="text" id="cuDepartamento" class="form-control form-control-sm" placeholder="Informática">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary btn-sm" id="btnConfirmarCrearUsuario">
+          <span id="btnCrearUsuarioTexto"><i class="bi bi-person-check me-1"></i>Crear y enviar credenciales</span>
+          <span id="btnCrearUsuarioSpinner" class="d-none"><span class="spinner-border spinner-border-sm me-1"></span>Creando...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- ---- TAB: INVENTARIO ---- -->
+    <div class="tab-pane fade" id="tabInventario">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="section-title mb-0">Inventario de hardware</h2>
+        <button id="btnNuevaCategoria" class="btn btn-primary btn-sm">
+          <i class="bi bi-plus-lg me-1"></i>Nueva categoría
+        </button>
+      </div>
+
+      <div class="row g-3">
+        <!-- Columna izquierda: lista de categorías -->
+        <div class="col-md-5">
+          <div id="invListaCategorias">
+            <div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div></div>
+          </div>
+        </div>
+
+        <!-- Columna derecha: items de la categoría seleccionada -->
+        <div class="col-md-7">
+          <div id="invPlaceholderItems" class="text-center text-muted py-5">
+            <i class="bi bi-arrow-left-circle fs-3 d-block mb-2"></i>
+            Selecciona una categoría para ver sus unidades.
+          </div>
+          <div id="invPanelItems" class="inv-panel-items d-none">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <h6 class="mb-0 fw-bold" id="invItemsHeader"></h6>
+              <button id="btnNuevoItem" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-plus-lg me-1"></i>Añadir unidades
+              </button>
+            </div>
+            <div id="invListaItems"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-content -->
+</div>
+
+<!-- ===== MODAL: Gestionar solicitud ===== -->
+<div class="modal fade" id="modalGestion" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-gear me-2" style="color:#818cf8;"></i>Gestionar solicitud
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="gestionInfo" class="mb-3"></div>
+        <hr />
+        <form id="formGestion">
+          <input type="hidden" id="gestionId" />
+          <input type="hidden" id="gestionEstadoActual" />
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Nuevo estado</label>
+              <select id="nuevoEstado" class="form-select">
+                <option value="pendiente">Pendiente</option>
+                <option value="en_revision">En revisión</option>
+                <option value="aprobada">Aprobada</option>
+                <option value="rechazada">Rechazada</option>
+                <option value="en_instalacion">En instalación</option>
+                <option value="completada">Completada</option>
+              </select>
+            </div>
+            <div class="col-md-6" id="wrapperTecnico">
+              <label class="form-label" id="labelTecnico">Técnico encargado <span class="text-muted fw-normal" style="font-size:.8rem;">(opcional)</span></label>
+              <select id="selectTecnico" class="form-select">
+                <option value="">— Sin asignar —</option>
+              </select>
+            </div>
+          </div>
+          <div class="mt-3">
+            <label class="form-label">Comentario TIC</label>
+            <textarea id="comentarioTic" class="form-control" rows="3"
+              placeholder="Añade notas para el profesor..."></textarea>
+          </div>
+          <div class="modal-footer px-0 pb-0 mt-3">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-floppy me-1"></i>Guardar cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Editar aula ===== -->
+<div class="modal fade" id="modalEditarAula" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil me-2" style="color:#818cf8;"></i>Editar aula
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditarAula">
+          <input type="hidden" id="editarAulaId" />
+          <div class="mb-2">
+            <label class="form-label">Nombre</label>
+            <input type="text" id="editarAulaNombre" class="form-control" required />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Edificio</label>
+            <input type="text" id="editarAulaEdificio" class="form-control" required />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Planta</label>
+            <select id="editarAulaPlanta" class="form-select" required>
+              <option value="" disabled>Selecciona planta</option>
+              <option value="Sótano 2">Sótano 2 (-2)</option>
+              <option value="Sótano 1">Sótano 1 (-1)</option>
+              <option value="Baja">Planta Baja (0)</option>
+              <option value="Primera">Primera (1)</option>
+              <option value="Segunda">Segunda (2)</option>
+              <option value="Tercera">Tercera (3)</option>
+              <option value="Cuarta">Cuarta (4)</option>
+              <option value="Quinta">Quinta (5)</option>
+              <option value="Sexta">Sexta (6)</option>
+              <option value="Séptima">Séptima (7)</option>
+              <option value="Octava">Octava (8)</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Capacidad</label>
+            <input type="number" id="editarAulaCapacidad" class="form-control" min="1" required />
+          </div>
+          <div class="form-check mb-1">
+            <input type="checkbox" id="editarAulaProyector" class="form-check-input" />
+            <label class="form-check-label" for="editarAulaProyector">Tiene proyector</label>
+          </div>
+          <div class="form-check mb-3">
+            <input type="checkbox" id="editarAulaRed" class="form-check-input" />
+            <label class="form-check-label" for="editarAulaRed">Tiene red Ethernet</label>
+          </div>
+          <div class="modal-footer px-0 pb-0">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-floppy me-1"></i>Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Mi perfil ===== -->
+<div class="modal fade" id="modalPerfil" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-person-circle me-2" style="color:#818cf8;"></i>Mi perfil
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Cabecera avatar -->
+        <div id="perfilHeader" class="text-center mb-3" style="display:none;">
+          <div class="profile-avatar" id="perfilAvatar"></div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--navy);" id="perfilNombreDisplay"></div>
+          <div style="font-size:.8rem;color:var(--gray-500);margin-top:.1rem;" id="perfilRolDisplay"></div>
+        </div>
+        <!-- Spinner inicial -->
+        <div id="perfilCargando" class="text-center py-3">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="perfilTabs" style="display:none;">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#perfilTabInfo">
+              <i class="bi bi-info-circle me-1"></i>Info
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#perfilTabEditar">
+              <i class="bi bi-pencil me-1"></i>Editar datos
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#perfilTabPassword">
+              <i class="bi bi-shield-lock me-1"></i>Contraseña
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content" id="perfilTabContent">
+          <!-- Tab info -->
+          <div class="tab-pane fade show active" id="perfilTabInfo">
+            <div id="perfilInfoContenido"></div>
+          </div>
+          <!-- Tab editar -->
+          <div class="tab-pane fade" id="perfilTabEditar">
+            <form id="formEditarPerfil">
+              <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" id="perfilNombre" class="form-control" required minlength="2" maxlength="100" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Apellidos</label>
+                <input type="text" id="perfilApellidos" class="form-control" required minlength="2" maxlength="100" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="perfilEmail" class="form-control" required maxlength="150" />
+              </div>
+              <div id="alertaEditarPerfil"></div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-floppy me-1"></i>Guardar cambios
+              </button>
+            </form>
+          </div>
+          <!-- Tab contraseña -->
+          <div class="tab-pane fade" id="perfilTabPassword">
+            <form id="formCambiarPassword">
+              <div class="mb-3">
+                <label class="form-label">Contraseña actual</label>
+                <input type="password" id="perfilPasswordActual" class="form-control" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Nueva contraseña</label>
+                <input type="password" id="perfilPasswordNueva" class="form-control" required minlength="8" />
+                <div class="form-text">Mínimo 8 caracteres, una mayúscula y un número.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Confirmar nueva contraseña</label>
+                <input type="password" id="perfilPasswordConfirmacion" class="form-control" required />
+              </div>
+              <div id="alertaCambiarPassword"></div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-shield-lock me-1"></i>Cambiar contraseña
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Mapa de ordenadores del aula ===== -->
+<div class="modal fade" id="modalMapaAula" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-grid-3x3-gap me-2" style="color:#818cf8;"></i>
+          Mapa de PCs —
+          <span id="mapaAulaNombre" style="color:var(--blue);"></span>
+        </h5>
+        <button type="button" id="btnExportarPDFMapa" class="btn btn-sm btn-outline-secondary me-2"
+                title="Exportar lista de PCs a PDF">
+          <i class="bi bi-file-earmark-pdf me-1"></i>Exportar PDF
+        </button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <!-- Panel de filtros PDF (oculto por defecto) -->
+      <div id="panelFiltrosPDF" class="border-bottom px-4 py-3 bg-light" style="display:none;">
+        <div class="d-flex flex-wrap align-items-center gap-3">
+          <span class="fw-semibold" style="font-size:.85rem;">Incluir en el PDF:</span>
+          <div class="form-check form-check-inline mb-0">
+            <input class="form-check-input filtro-estado-pdf" type="checkbox" id="filtroAveriado" value="averiado" checked />
+            <label class="form-check-label" for="filtroAveriado">Averiado</label>
+          </div>
+          <div class="form-check form-check-inline mb-0">
+            <input class="form-check-input filtro-estado-pdf" type="checkbox" id="filtroSinMonitor" value="sin_monitor" checked />
+            <label class="form-check-label" for="filtroSinMonitor">Sin monitor</label>
+          </div>
+          <div class="form-check form-check-inline mb-0">
+            <input class="form-check-input filtro-estado-pdf" type="checkbox" id="filtroMantenimiento" value="mantenimiento" />
+            <label class="form-check-label" for="filtroMantenimiento">Mantenimiento</label>
+          </div>
+          <div class="form-check form-check-inline mb-0">
+            <input class="form-check-input filtro-estado-pdf" type="checkbox" id="filtroOperativo" value="operativo" />
+            <label class="form-check-label" for="filtroOperativo">Operativo</label>
+          </div>
+          <button type="button" id="btnDescargarPDFMapa" class="btn btn-sm btn-primary ms-2">
+            <i class="bi bi-download me-1"></i>Descargar PDF
+          </button>
+          <button type="button" id="btnCancelarFiltrosPDF" class="btn btn-sm btn-outline-secondary">
+            Cancelar
+          </button>
+        </div>
+      </div>
+      <div class="modal-body" id="mapaAulaContenido">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Confirmación genérica ===== -->
+<div class="modal fade" id="modalConfirmar" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmarTitulo">
+          <i class="bi bi-exclamation-triangle me-2" style="color:#ef4444;"></i>Confirmar acción
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="modalConfirmarMensaje" class="mb-0"></p>
+        <p class="text-muted mt-2 mb-0" style="font-size:.85rem;">Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="modalConfirmarBtn" class="btn btn-danger">
+          <i class="bi bi-trash me-1"></i>Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Historial de solicitudes ===== -->
+<div class="modal fade" id="modalHistorial" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-clock-history me-2" style="color:#818cf8;"></i>Historial de solicitudes
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Filtros -->
+        <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+          <select id="historialFiltroEstado" class="form-select form-select-sm" style="max-width:180px;">
+            <option value="">Todas</option>
+            <option value="completada">Completadas</option>
+            <option value="rechazada">Rechazadas</option>
+          </select>
+          <div class="input-group input-group-sm" style="max-width:280px;">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="historialBuscador" class="form-control"
+                   placeholder="Buscar profesor, software, aula..." />
+          </div>
+          <span id="historialContador" class="text-muted ms-1" style="font-size:.82rem;"></span>
+        </div>
+        <!-- Tabla -->
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Profesor</th>
+                <th>Software</th>
+                <th>Aula</th>
+                <th>Estado</th>
+                <th>Fecha límite</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="historialTbody">
+              <tr><td colspan="7" class="text-center py-3">
+                <div class="spinner-border spinner-border-sm"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Modal editar usuario (solo admin) -->
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-person-gear me-2"></i>Editar usuario</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Pills nav -->
+        <ul class="nav nav-pills mb-4" id="pillsEditarUsuario">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tabEditDatos" type="button">
+              <i class="bi bi-person me-1"></i>Datos
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tabEditPassword" type="button">
+              <i class="bi bi-key me-1"></i>Contraseña
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <!-- Tab Datos -->
+          <div class="tab-pane fade show active" id="tabEditDatos">
+            <form id="formEditarUsuario" novalidate>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold" style="font-size:.85rem;">Nombre <span class="text-danger">*</span></label>
+                  <input type="text" id="editNombre" class="form-control form-control-sm" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold" style="font-size:.85rem;">Apellidos <span class="text-danger">*</span></label>
+                  <input type="text" id="editApellidos" class="form-control form-control-sm" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold" style="font-size:.85rem;">Email <span class="text-danger">*</span></label>
+                  <input type="email" id="editEmail" class="form-control form-control-sm" required>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold" style="font-size:.85rem;">Rol <span class="text-danger">*</span></label>
+                  <select id="editRol" class="form-select form-select-sm">
+                    <option value="profesor">Profesor</option>
+                    <option value="tic">TIC</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-semibold" style="font-size:.85rem;">Departamento</label>
+                  <input type="text" id="editDepartamento" class="form-control form-control-sm" placeholder="Opcional">
+                </div>
+              </div>
+              <div id="errorEditarUsuario" class="mt-3"></div>
+            </form>
+          </div>
+          <!-- Tab Contraseña -->
+          <div class="tab-pane fade" id="tabEditPassword">
+            <div class="p-2">
+              <p class="text-muted" style="font-size:.9rem;">
+                <i class="bi bi-info-circle me-1"></i>
+                Se generará una contraseña aleatoria y se enviará al correo del usuario. La contraseña actual quedará invalidada.
+              </p>
+              <div id="wrapperResetConfirm">
+                <button type="button" id="btnIniciarReset" class="btn btn-warning btn-sm">
+                  <i class="bi bi-envelope me-1"></i>Enviar nueva contraseña
+                </button>
+              </div>
+              <div id="wrapperResetConfirmacion" class="d-none">
+                <div class="alert alert-warning py-2 mb-3" style="font-size:.85rem;">
+                  <i class="bi bi-exclamation-triangle me-1"></i>
+                  ¿Seguro? Esta acción invalida la contraseña actual del usuario.
+                </div>
+                <div class="d-flex gap-2">
+                  <button type="button" id="btnConfirmarReset" class="btn btn-danger btn-sm">
+                    <span id="btnResetTexto">Confirmar</span>
+                    <span id="btnResetSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                  </button>
+                  <button type="button" id="btnCancelarReset" class="btn btn-secondary btn-sm">Cancelar</button>
+                </div>
+              </div>
+              <div id="errorResetPassword" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" id="footerEditarUsuario">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="btnGuardarEditarUsuario" class="btn btn-primary btn-sm">
+          <span id="btnGuardarTexto">Guardar cambios</span>
+          <span id="btnGuardarSpinner" class="spinner-border spinner-border-sm d-none"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal detalle software -->
+<div class="modal fade" id="modalDetalleSoftware" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title d-flex align-items-center gap-2">
+          <i class="bi bi-box-seam"></i>
+          <span id="detalleSWNombre"></span>
+          <span class="badge bg-secondary fw-normal ms-1" id="detalleSWVersion" style="font-size:.75rem;"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <span id="detalleSWTipo"></span>
+        </div>
+        <div class="mb-3" id="detalleSWUrlWrapper">
+          <label class="form-label fw-semibold" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;">
+            <i class="bi bi-download me-1"></i>Descarga
+          </label>
+          <div><a id="detalleSWUrl" href="#" target="_blank" class="text-break"></a></div>
+        </div>
+        <div id="detalleSWReqWrapper">
+          <label class="form-label fw-semibold" style="font-size:.75rem;text-transform:uppercase;letter-spacing:.04em;">
+            <i class="bi bi-gear me-1"></i>Requisitos de instalación
+          </label>
+          <div class="p-3 rounded" style="background:var(--gray-100);white-space:pre-wrap;font-size:.875rem;line-height:1.6;" id="detalleSWRequisitos"></div>
+        </div>
+        <div id="detalleSWSinReq" class="text-muted" style="font-size:.875rem;">
+          <i class="bi bi-info-circle me-1"></i>Sin requisitos especificados.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+        <a id="detalleSWBtnDescarga" href="#" target="_blank" class="btn btn-primary btn-sm">
+          <i class="bi bi-download me-1"></i>Descargar
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Nueva/editar categoría -->
+<!-- Modal: Crear / editar categoría -->
+<div class="modal fade" id="modalCategoria" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalCategoriaTitulo">Nueva categoría</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formCategoria" novalidate>
+        <div class="modal-body">
+          <div id="errorCategoria" class="alert alert-danger d-none"></div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+            <input type="text" name="catNombre" class="form-control" required maxlength="100"
+                   placeholder="Ej: Ratones, Teclados, Proyectores…" />
+          </div>
+          <div id="wrapperCantidad" class="mb-3">
+            <label class="form-label fw-semibold">Cantidad inicial <span class="text-danger">*</span></label>
+            <input type="number" name="catCantidad" class="form-control" min="1" value="1" />
+            <div class="form-text">Se crearán N unidades con nombre "Nombre 1", "Nombre 2"…</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Añadir unidades a categoría existente -->
+<div class="modal fade" id="modalAddUnidades" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Añadir unidades</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formAddUnidades" novalidate>
+        <div class="modal-body">
+          <div id="errorAddUnidades" class="alert alert-danger d-none"></div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Cantidad <span class="text-danger">*</span></label>
+            <input type="number" name="addCantidad" class="form-control" min="1" value="1" />
+            <div class="form-text">Se añadirán al final de la numeración existente.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary btn-sm">Añadir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Editar unidad individual -->
+<div class="modal fade" id="modalItem" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar unidad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="formItem" novalidate>
+        <div class="modal-body">
+          <div id="errorItem" class="alert alert-danger d-none"></div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nombre <span class="text-danger">*</span></label>
+            <input type="text" name="itemNombre" class="form-control" required maxlength="100" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Estado <span class="text-danger">*</span></label>
+            <select name="itemEstado" class="form-select">
+              <option value="operativo">Operativo</option>
+              <option value="averiado">Averiado</option>
+              <option value="en_reparacion">En reparación</option>
+              <option value="dado_de_baja">Dado de baja</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar eliminación (inventario) -->
+<div class="modal fade" id="modalConfirmarInv" tabindex="-1">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmarInvTexto" class="mb-0"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" id="confirmarInvBtn" class="btn btn-danger btn-sm">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/locale/es.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script type="module" src="../js/tic.js"></script>
+</body>
+</html>

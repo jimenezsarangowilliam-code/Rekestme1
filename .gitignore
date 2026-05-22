@@ -1,0 +1,44 @@
+# ==============================
+# ReKestMe — .gitignore
+# ==============================
+
+# Variables de entorno y configuración local
+.env
+.env.local
+backend/config/Database.local.php
+
+# Dependencias (si se añade Composer en el futuro)
+vendor/
+
+# Logs
+*.log
+logs/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (si se añade en el futuro)
+node_modules/
+
+# API keys — nunca subir al repo
+backend/config/ApiKeys.php
+
+# Documentación interna y notas de desarrollo
+CLAUDE.md
+PENDIENTE.md
+docs/
+
+# Base de datos
+database/reset_prod.sql
+
+# Herramientas de desarrollo local
+.playwright-mcp/
+.claude/

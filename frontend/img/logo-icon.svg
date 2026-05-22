@@ -1,0 +1,32 @@
+<svg width="48" height="48" viewBox="0 0 48 48" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>ReKestMe</title>
+  <defs>
+    <marker id="arI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <!-- Monitor -->
+  <rect x="1" y="1" width="30" height="22" rx="3" fill="#0f2440" stroke="#3b82f6" stroke-width="1.8"/>
+  <rect x="4" y="4" width="24" height="16" rx="2" fill="#0d1f38"/>
+  <line x1="7"  y1="8"  x2="16" y2="8"  stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+  <line x1="7"  y1="12" x2="22" y2="12" stroke="#22d3ee" stroke-width="1.4" stroke-linecap="round" opacity="0.6"/>
+  <line x1="7"  y1="16" x2="18" y2="16" stroke="#3b82f6" stroke-width="1.4" stroke-linecap="round" opacity="0.7"/>
+  <!-- Stand -->
+  <rect x="14" y="23" width="4" height="5" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+  <rect x="10" y="27" width="12" height="3" rx="1.5" fill="rgba(255,255,255,0.2)"/>
+  <!-- Arrow -->
+  <line x1="33" y1="22" x2="39" y2="22" stroke="#22d3ee" stroke-width="2" marker-end="url(#arI)"/>
+  <circle cx="34.5" cy="22" r="1.5" fill="#22d3ee"/>
+  <circle cx="37"   cy="22" r="1.5" fill="#22d3ee" opacity="0.45"/>
+  <!-- Gear -->
+  <circle cx="44" cy="22" r="3.8" fill="none" stroke="#22d3ee" stroke-width="1.8"/>
+  <circle cx="44" cy="22" r="1.5" fill="#22d3ee"/>
+  <line x1="44" y1="16.5" x2="44" y2="18.5" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <line x1="44" y1="25.5" x2="44" y2="27.5" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <line x1="38.5" y1="22" x2="40.5" y2="22" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <line x1="47.5" y1="22" x2="47"   y2="22" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/>
+  <line x1="40.1" y1="18.1" x2="41.5" y2="19.5" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="46.5" y1="24.5" x2="47.9" y2="25.9" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="47.9" y1="18.1" x2="46.5" y2="19.5" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="41.5" y1="24.5" x2="40.1" y2="25.9" stroke="#22d3ee" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,9 @@
+RewriteEngine On
+RewriteBase /rekestme/backend/
+
+# Permitir acceso directo a archivos y carpetas reales
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirigir todo lo demás al index.php (router)
+RewriteRule ^(.*)$ index.php [QSA,L]

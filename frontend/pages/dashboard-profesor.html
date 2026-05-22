@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="/rekestme/frontend/pages/">
+  <title>Mi panel — ReKestMe</title>
+  <link rel="icon" type="image/svg+xml" href="../img/logo.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
+</head>
+<style>
+.btn-notif {
+  position: relative;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  border-radius: 8px;
+  padding: .3rem .55rem;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-notif:hover { background: rgba(255,255,255,.22); }
+.badge-notif {
+  position: absolute;
+  top: -5px; right: -5px;
+  background: #ef4444;
+  color: #fff;
+  border-radius: 999px;
+  font-size: .65rem;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--navy);
+}
+</style>
+<body class="dashboard-wrapper">
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-rekestme">
+  <div class="container-fluid px-3">
+    <span style="display:flex;align-items:center;gap:.75rem;">
+      <img src="../img/logo-navbar.svg" alt="ReKestMe" style="height:30px;width:auto;flex-shrink:0;">
+      <span style="color:rgba(255,255,255,.55);font-size:.8rem;font-weight:400;">/ Profesor</span>
+    </span>
+
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <button id="btnNotificaciones" class="btn-notif" title="Notificaciones">
+        <i class="bi bi-bell"></i>
+        <span id="badgeNotif" class="badge-notif" style="display:none;"></span>
+      </button>
+      <button id="btnVerPerfil" class="nav-user-btn">
+        <i class="bi bi-person-circle"></i>
+        <span id="nombreUsuario">Cargando...</span>
+      </button>
+      <button id="btnLogout" class="btn-logout btn btn-sm">
+        <i class="bi bi-box-arrow-right me-1"></i>Salir
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== CONTENIDO ===== -->
+<div class="dashboard-content">
+
+  <!-- Cabecera -->
+  <div class="page-header">
+    <h1 class="page-title">Mi panel de solicitudes</h1>
+    <p class="page-subtitle">Gestiona tus solicitudes de instalación de software</p>
+  </div>
+
+  <!-- Tarjetas de estadísticas -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="card stat-card stat-navy p-3">
+        <div class="stat-label">Total</div>
+        <div class="stat-numero" id="statTotal">—</div>
+        <i class="bi bi-collection stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card stat-card stat-slate p-3">
+        <div class="stat-label">Pendientes</div>
+        <div class="stat-numero" id="statPendientes">—</div>
+        <i class="bi bi-hourglass-split stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card stat-card stat-blue p-3">
+        <div class="stat-label">En curso</div>
+        <div class="stat-numero" id="statEnCurso">—</div>
+        <i class="bi bi-arrow-repeat stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card stat-card stat-success p-3">
+        <div class="stat-label">Completadas</div>
+        <div class="stat-numero" id="statCompletadas">—</div>
+        <i class="bi bi-check2-circle stat-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ===== COLUMNA IZQUIERDA: Nueva solicitud ===== -->
+    <div class="col-lg-4" style="animation: fadeInLeft .5s ease .2s both;">
+      <div class="card h-100">
+        <div class="card-header card-header-accent">
+          <span class="section-title">
+            <i class="bi bi-plus-circle-fill"></i>Nueva solicitud
+          </span>
+        </div>
+        <div class="card-body">
+          <form id="formNuevaSolicitud" novalidate>
+
+            <div class="mb-3">
+              <label class="form-label">Software solicitado</label>
+              <select id="selectSoftware" class="form-select" required>
+                <option value="">Cargando...</option>
+              </select>
+              <div class="mt-2">
+                <a href="#" id="btnNuevoSoftware" style="font-size:.83rem;">
+                  <i class="bi bi-plus-circle me-1"></i>¿No está en la lista? Añadir nuevo
+                </a>
+              </div>
+            </div>
+
+            <!-- Panel nuevo software -->
+            <div id="panelNuevoSoftware" class="border rounded p-3 mb-3" style="display:none;background:var(--bg-card,#f8fafc);">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="fw-semibold" style="color:var(--text-muted);">NUEVO SOFTWARE</small>
+                <a href="#" id="btnCancelarNuevo" style="font-size:.8rem;color:var(--text-muted);">✕ Cancelar</a>
+              </div>
+              <div class="mb-2">
+                <input type="text" id="inputNombreSoftware" class="form-control form-control-sm"
+                       placeholder="Nombre del software *" />
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <input type="text" id="inputVersion" class="form-control form-control-sm" placeholder="Versión (ej: 1.0)" />
+                </div>
+                <div class="col-6">
+                  <input type="url" id="inputUrlDescarga" class="form-control form-control-sm" placeholder="URL descarga" />
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Aula</label>
+              <select id="selectAula" class="form-select" required>
+                <option value="">Cargando...</option>
+              </select>
+            </div>
+
+            <!-- Zona del mapa de PCs (se muestra al seleccionar aula) -->
+            <div id="zonaMapaProfesor" class="zona-mapa-profesor mb-3" style="display:none;">
+              <div class="zona-titulo">
+                <i class="bi bi-grid-3x3-gap me-1"></i>Selecciona los ordenadores afectados
+              </div>
+              <div id="contenedorMapaProfesor"></div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Fecha necesaria</label>
+              <input type="text" id="fechaNecesaria" class="form-control" placeholder="dd/mm/aaaa" readonly required />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Motivo</label>
+              <textarea id="motivo" class="form-control" rows="4"
+                        placeholder="Explica para qué necesitas este software..." required></textarea>
+            </div>
+
+            <div id="alertaFormSolicitud"></div>
+
+            <button type="submit" class="btn btn-primary w-100" style="padding:.65rem;">
+              <i class="bi bi-send me-2"></i>Enviar solicitud
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== COLUMNA DERECHA: Tabs ===== -->
+    <div class="col-lg-8" style="animation: fadeInRight .5s ease .2s both;">
+      <div class="card">
+        <div class="card-header p-0">
+          <ul class="nav nav-tabs border-0 px-3 pt-2" id="tabsProfesor">
+            <li class="nav-item">
+              <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tabSolicitudes">
+                <i class="bi bi-list-check me-1"></i>Mis solicitudes
+              </button>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tabAulas" id="btnTabAulas">
+                <i class="bi bi-building me-1"></i>Aulas del centro
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div class="tab-content">
+          <!-- Tab: Mis solicitudes -->
+          <div class="tab-pane fade show active" id="tabSolicitudes">
+            <div class="d-flex justify-content-end px-3 pt-2 pb-1">
+              <button class="btn btn-outline-primary btn-sm" onclick="location.reload()">
+                <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table mb-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Software</th>
+                    <th>Aula</th>
+                    <th>Fecha límite</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaSolicitudes">
+                  <tr>
+                    <td colspan="6" class="text-center py-5">
+                      <div class="spinner-border" role="status" style="width:2rem;height:2rem;"></div>
+                      <div style="color:var(--text-muted);font-size:.875rem;margin-top:.75rem;">Cargando solicitudes...</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- Tab: Aulas del centro -->
+          <div class="tab-pane fade" id="tabAulas">
+            <div class="row g-3 p-3" id="gridAulas">
+              <div class="col-12 text-center py-4">
+                <div class="spinner-border text-primary" role="status"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== MODAL: Ver detalle ===== -->
+<div class="modal fade" id="modalDetalle" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>Detalle de solicitud
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalDetalleContenido"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Confirmar envío de solicitud ===== -->
+<div class="modal fade" id="modalConfirmarEnvio" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-send-check me-2" style="color:#818cf8;"></i>Confirmar solicitud
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning mb-3">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          <strong>Atención:</strong> Una vez enviada la solicitud <strong>no podrás modificarla ni eliminarla</strong>.
+          Asegúrate de que los datos son correctos antes de confirmar.
+        </div>
+        <div id="resumenSolicitud" style="font-size:.875rem;color:var(--gray-600);"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-arrow-left me-1"></i>Revisar
+        </button>
+        <button type="button" id="btnConfirmarEnvio" class="btn btn-primary">
+          <i class="bi bi-send me-1"></i>Confirmar y enviar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Mi perfil ===== -->
+<div class="modal fade" id="modalPerfil" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-person-circle me-2" style="color:#818cf8;"></i>Mi perfil
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Cabecera avatar -->
+        <div id="perfilHeader" class="text-center mb-3" style="display:none;">
+          <div class="profile-avatar" id="perfilAvatar"></div>
+          <div style="font-size:1.05rem;font-weight:700;color:var(--navy);" id="perfilNombreDisplay"></div>
+          <div style="font-size:.8rem;color:var(--gray-500);margin-top:.1rem;" id="perfilRolDisplay"></div>
+        </div>
+        <!-- Spinner inicial -->
+        <div id="perfilCargando" class="text-center py-3">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-3" id="perfilTabs" style="display:none;">
+          <li class="nav-item">
+            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#perfilTabInfo">
+              <i class="bi bi-info-circle me-1"></i>Info
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#perfilTabEditar">
+              <i class="bi bi-pencil me-1"></i>Editar datos
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#perfilTabPassword">
+              <i class="bi bi-shield-lock me-1"></i>Contraseña
+            </button>
+          </li>
+        </ul>
+        <div class="tab-content" id="perfilTabContent">
+          <!-- Tab info -->
+          <div class="tab-pane fade show active" id="perfilTabInfo">
+            <div id="perfilInfoContenido"></div>
+          </div>
+          <!-- Tab editar -->
+          <div class="tab-pane fade" id="perfilTabEditar">
+            <form id="formEditarPerfil">
+              <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" id="perfilNombre" class="form-control" required minlength="2" maxlength="100" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Apellidos</label>
+                <input type="text" id="perfilApellidos" class="form-control" required minlength="2" maxlength="100" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="perfilEmail" class="form-control" required maxlength="150" />
+              </div>
+              <div id="alertaEditarPerfil"></div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-floppy me-1"></i>Guardar cambios
+              </button>
+            </form>
+          </div>
+          <!-- Tab contraseña -->
+          <div class="tab-pane fade" id="perfilTabPassword">
+            <form id="formCambiarPassword">
+              <div class="mb-3">
+                <label class="form-label">Contraseña actual</label>
+                <input type="password" id="perfilPasswordActual" class="form-control" required />
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Nueva contraseña</label>
+                <input type="password" id="perfilPasswordNueva" class="form-control" required minlength="8" />
+                <div class="form-text">Mínimo 8 caracteres, una mayúscula y un número.</div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Confirmar nueva contraseña</label>
+                <input type="password" id="perfilPasswordConfirmacion" class="form-control" required />
+              </div>
+              <div id="alertaCambiarPassword"></div>
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-shield-lock me-1"></i>Cambiar contraseña
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Ver aula ===== -->
+<div class="modal fade" id="modalAula" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-building me-2" style="color:#818cf8;"></i>
+          <span id="modalAulaNombre"></span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalAulaContenido"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/dayjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/locale/es.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dayjs@1.11.10/plugin/relativeTime.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/es.js"></script>
+<script type="module" src="../js/profesor.js"></script>
+</body>
+</html>

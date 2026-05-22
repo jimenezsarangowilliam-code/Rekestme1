@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear cuenta — ReKestMe</title>
+<link rel="icon" type="image/svg+xml" href="../img/logo.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-900: #0f2657;
+    --blue-800: #163580;
+    --blue-700: #1a3fa0;
+    --blue-600: #1d4ed8;
+    --blue-500: #2563eb;
+    --blue-400: #3b82f6;
+    --blue-100: #dbeafe;
+    --blue-50:  #eff6ff;
+    --gray-50:  #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --red-500:  #ef4444;
+    --red-100:  #fee2e2;
+    --green-500:#22c55e;
+    --green-100:#dcfce7;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: 'Inter', sans-serif;
+    background: var(--blue-900);
+    color: var(--gray-900);
+  }
+
+  .page {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+  }
+
+  /* LEFT PANEL */
+  .panel-left {
+    flex: 1;
+    background: linear-gradient(150deg, var(--blue-900) 0%, var(--blue-700) 60%, #2a5ee8 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 56px 64px;
+    position: relative;
+    overflow: hidden;
+    min-height: 100vh;
+  }
+
+  .panel-left::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 600px 500px at 10% 110%, rgba(59,130,246,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 400px at 90% -10%, rgba(99,160,255,0.15) 0%, transparent 70%);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .brand-icon {
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .brand-icon svg { width: 24px; height: 24px; }
+
+  .brand-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+
+  .hero { position: relative; z-index: 1; }
+
+  .hero-tagline {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 20px;
+  }
+
+  .hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: #fff;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+  }
+
+  .hero-title span { color: #93c5fd; }
+
+  .hero-body {
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(255,255,255,0.65);
+    max-width: 380px;
+  }
+
+  .features-list {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .feature-dot {
+    width: 8px; height: 8px;
+    background: #93c5fd;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .feature-text {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+  }
+
+  .deco {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+  .deco-1 { width: 500px; height: 500px; bottom: -180px; right: -140px; }
+  .deco-2 { width: 300px; height: 300px; bottom: -60px; right: 20px; }
+  .deco-3 { width: 160px; height: 160px; top: 120px; right: 60px; }
+
+  /* RIGHT PANEL */
+  .panel-right {
+    width: 560px;
+    min-width: 500px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px 56px;
+    overflow-y: auto;
+  }
+
+  .form-header { margin-bottom: 36px; }
+
+  .form-eyebrow {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--blue-500);
+    margin-bottom: 10px;
+  }
+
+  .form-title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    color: var(--gray-900);
+  }
+
+  /* FORM */
+  .form { display: flex; flex-direction: column; gap: 18px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .field-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    color: var(--gray-600);
+    text-transform: uppercase;
+  }
+
+  .field-label .optional {
+    font-size: 11px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--gray-400);
+  }
+
+  .input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--gray-400);
+    pointer-events: none;
+    transition: color 0.15s;
+  }
+
+  .input-wrap:focus-within .input-icon { color: var(--blue-500); }
+
+  .field-input {
+    width: 100%;
+    padding: 11px 16px 11px 42px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    outline: none;
+    transition: all 0.15s;
+  }
+
+  .field-input.no-icon {
+    padding-left: 16px;
+  }
+
+  .field-input::placeholder { color: var(--gray-400); }
+
+  .field-input:focus {
+    border-color: var(--blue-500);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+
+  .field-input.error {
+    border-color: var(--red-500);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.08);
+  }
+
+  .field-select {
+    width: 100%;
+    padding: 11px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    outline: none;
+    transition: all 0.15s;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+
+  .field-select:focus {
+    border-color: var(--blue-500);
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  }
+
+  .input-action {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
+  }
+  .input-action:hover { color: var(--gray-700); }
+
+  /* SUBMIT BTN */
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--blue-500);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-top: 4px;
+  }
+  .submit-btn:hover:not(:disabled) {
+    background: var(--blue-700);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.35);
+  }
+  .submit-btn:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: none;
+  }
+  .submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+  /* LOGIN FOOTER */
+  .login-row {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--gray-500);
+  }
+  .login-row a {
+    color: var(--blue-500);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .login-row a:hover { color: var(--blue-700); }
+
+  /* auth.js compat */
+  .alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  .alert ul { padding-left: 1.2em; margin: 0; }
+  .alert-danger { background: var(--red-100); color: #b91c1c; }
+  .alert-success { background: var(--green-100); color: #166534; }
+  .spinner-border {
+    display: inline-block;
+    width: 1rem; height: 1rem;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .65s linear infinite;
+    vertical-align: middle;
+  }
+  .spinner-border-sm { width: .875rem; height: .875rem; }
+  .me-2 { margin-right: .5rem; }
+  .mb-0 { margin-bottom: 0; }
+  .mt-1 { margin-top: .25rem; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 960px) {
+    .panel-left { display: none; }
+    .panel-right { width: 100%; min-width: 0; padding: 40px 28px; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
+    <div class="deco deco-1"></div>
+    <div class="deco deco-2"></div>
+    <div class="deco deco-3"></div>
+
+    <div class="brand">
+      <img src="../img/logo-icon.svg" alt="ReKestMe" style="width:44px;height:44px;flex-shrink:0;filter:drop-shadow(0 0 8px rgba(34,211,238,0.35));">
+      <span class="brand-name">ReKestMe</span>
+    </div>
+
+    <div class="hero">
+      <p class="hero-tagline">Acceso institucional</p>
+      <h1 class="hero-title">Empieza<br>a gestionar<br><span>hoy mismo.</span></h1>
+      <p class="hero-body">Crea tu cuenta y forma parte del sistema de gestión de solicitudes de software de tu centro.</p>
+    </div>
+
+    <div class="features-list">
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        <span class="feature-text">Solicita software para tus aulas en segundos</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        <span class="feature-text">Seguimiento en tiempo real del estado de tu petición</span>
+      </div>
+      <div class="feature-item">
+        <div class="feature-dot"></div>
+        <span class="feature-text">Comunicación directa con el equipo TIC</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right">
+    <div class="form-header">
+      <p class="form-eyebrow">Únete a nosotros</p>
+      <h2 class="form-title">Crear cuenta</h2>
+    </div>
+
+    <div id="errorRegistro"></div>
+
+    <form class="form" id="formRegistro" novalidate>
+
+      <!-- NOMBRE / APELLIDOS -->
+      <div class="form-row">
+        <div class="field">
+          <label class="field-label" for="nombre">Nombre</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input class="field-input" id="nombre" type="text" placeholder="Ana" required autocomplete="given-name">
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="apellidos">Apellidos</label>
+          <input class="field-input no-icon" id="apellidos" type="text" placeholder="García López" required autocomplete="family-name">
+        </div>
+      </div>
+
+      <!-- EMAIL -->
+      <div class="field">
+        <label class="field-label" for="email">Email institucional</label>
+        <div class="input-wrap">
+          <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+          <input class="field-input" id="email" type="email" placeholder="ana.garcia@instituto.es" required autocomplete="email">
+        </div>
+      </div>
+
+      <!-- PASSWORD / REPETIR -->
+      <div class="form-row">
+        <div class="field">
+          <label class="field-label" for="password">Contraseña</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input class="field-input" id="password" type="password" placeholder="Mín. 8 caracteres" required minlength="8" autocomplete="new-password">
+            <button type="button" class="input-action" onclick="togglePwd('password','eye1')" title="Mostrar/ocultar">
+              <svg id="eye1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="password2">Repetir contraseña</label>
+          <div class="input-wrap">
+            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <input class="field-input" id="password2" type="password" placeholder="••••••••" required autocomplete="new-password">
+            <button type="button" class="input-action" onclick="togglePwd('password2','eye2')" title="Mostrar/ocultar">
+              <svg id="eye2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROL / DEPARTAMENTO -->
+      <div class="form-row">
+        <div class="field">
+          <label class="field-label" for="rol">Rol</label>
+          <select class="field-select" id="rol" required>
+            <option value="profesor">Profesor/a</option>
+            <option value="tic">Personal TIC</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="field-label" for="departamento">Departamento <span class="optional">(opcional)</span></label>
+          <input class="field-input no-icon" id="departamento" type="text" placeholder="Informática">
+        </div>
+      </div>
+
+      <!-- SUBMIT -->
+      <button class="submit-btn" type="submit"
+        data-texto='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><polyline points="16 3 21 8 16 13"/><line x1="21" y1="8" x2="9" y2="8"/></svg>Crear cuenta'>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:.4rem"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><polyline points="16 3 21 8 16 13"/><line x1="21" y1="8" x2="9" y2="8"/></svg>
+        Crear cuenta
+      </button>
+    </form>
+
+    <p class="login-row">
+      ¿Ya tienes cuenta? <a href="login.html">← Inicia sesión aquí</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  function togglePwd(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    const visible = input.type === 'text';
+    input.type = visible ? 'password' : 'text';
+    icon.innerHTML = visible
+      ? `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`
+      : `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+  }
+</script>
+<script type="module" src="../js/auth.js"></script>
+</body>
+</html>

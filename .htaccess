@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /rekestme/
+
+# URLs limpias para las páginas del frontend
+RewriteRule ^login$       frontend/pages/login.html    [L]
+RewriteRule ^registro$    frontend/pages/registro.html [L]
+RewriteRule ^panel$       frontend/pages/dashboard-profesor.html [L]
+RewriteRule ^panel-tic$   frontend/pages/dashboard-tic.html      [L]
+
+# Redirigir la raíz del proyecto al login
+RewriteRule ^$ frontend/pages/login.html [L]
