@@ -34,6 +34,7 @@ backend/config/ApiKeys.php
 # Documentación interna y notas de desarrollo
 CLAUDE.md
 PENDIENTE.md
+DESPLIEGUE.md
 docs/
 
 # Base de datos
